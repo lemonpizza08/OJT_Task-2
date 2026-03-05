@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OJT Task #2 - Supabase Integration</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 350px; border-top: 8px solid #003366; /* T.I.P. Blue */ }
+        h2 { color: #003366; margin-bottom: 0.5rem; }
+        #message { font-size: 1.2rem; font-weight: bold; color: #cc9900; /* T.I.P. Gold */ margin: 1.5rem 0; padding: 10px; background: #fffdf0; border-radius: 8px; }
+        input { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background-color: #003366; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #0055aa; }
+    </style>
+</head>
+<body onload="displayMessage()">
+
+    <div class="card">
+        <h2>OJT Task #2</h2>
+        
+        <div id="message">Loading...</div>
+
+        <hr>
+        
+        <p>Update Content:</p>
+        <input type="text" id="userInput" placeholder="Type new message here...">
+        <br>
+        <button onclick="updateDatabase()">Enter</button>
+    </div>
+
+    <script>
+        // --- WORKING LOGIC ---
+        
+        // 1. READ DATA
+        async function displayMessage() {
+            try {
+                const response = await fetch('http://localhost:3001/messages');
+                const data = await response.json();
+                
+                // We pick the first item from the array returned by server.js
+                if (data && data.length > 0) {
+                    document.getElementById('message').innerText = data[0].content;
+                } else {
+                    document.getElementById('message').innerText = "Table is empty!";
+                }
+            } catch (error) {
+                console.error("Connection Error:", error);
+                document.getElementById('message').innerHTML = "Backend is Offline";
+            }
+        }
+
+        // 2. EDIT DATA
+        async function updateDatabase() {
+            const newText = document.getElementById('userInput').value;
+            
+            if (!newText) {
+                alert("Please enter some text!");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3001/api/update-message', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ updatedText: newText })
+                });
+
+                if (response.ok) {
+                    alert("Success! Database Updated.");
+                    document.getElementById('userInput').value = ""; // Clear input
+                    displayMessage(); // Refresh the text on screen
+                } else {
+                    alert("Update failed. Check server console.");
+                }
+            } catch (error) {
+                alert("Failed to connect to Port 3001");
+            }
+        }
+    </script>
+</body>
+</html>

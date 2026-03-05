@@ -1,0 +1,12 @@
+-- database/schema.sql
+
+-- This is the table structure I created in the Supabase PostgreSQL instance
+CREATE TABLE "OJT Task #2" (
+    id SERIAL PRIMARY KEY,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Initial data seed
+INSERT INTO "OJT Task #2" (content) 
+VALUES ('Initial OJT Message');
